@@ -1,13 +1,13 @@
 /* ══════════════════════════════════════
-   SEED — Portal da Transparência BR
-   Dados realistas baseados na estrutura
-   do Portal da Transparência Federal
+   SEED | Brazilian Transparency Portal
+   Realistic data based on the structure
+   of the Federal Transparency Portal
    ══════════════════════════════════════ */
 
 const SEED_SCHEMA = `
 
 -- ════════════════════════════════════
--- GASTOS DO GOVERNO FEDERAL
+-- FEDERAL GOVERNMENT SPENDING
 -- ════════════════════════════════════
 CREATE TABLE gastos_governo (
     id SERIAL PRIMARY KEY,
@@ -24,7 +24,7 @@ CREATE TABLE gastos_governo (
 );
 
 -- ════════════════════════════════════
--- SERVIDORES PÚBLICOS FEDERAIS
+-- FEDERAL CIVIL SERVANTS
 -- ════════════════════════════════════
 CREATE TABLE servidores (
     id SERIAL PRIMARY KEY,
@@ -41,7 +41,7 @@ CREATE TABLE servidores (
 );
 
 -- ════════════════════════════════════
--- TRANSFERÊNCIAS A MUNICÍPIOS
+-- TRANSFERS TO MUNICIPALITIES
 -- ════════════════════════════════════
 CREATE TABLE transferencias (
     id SERIAL PRIMARY KEY,
@@ -55,7 +55,7 @@ CREATE TABLE transferencias (
 );
 
 -- ════════════════════════════════════
--- EMENDAS PARLAMENTARES
+-- PARLIAMENTARY BUDGET AMENDMENTS
 -- ════════════════════════════════════
 CREATE TABLE emendas (
     id SERIAL PRIMARY KEY,
@@ -70,7 +70,7 @@ CREATE TABLE emendas (
 );
 `;
 
-// ── Helper para gerar dados ──
+// ── Data generation helper ──
 function _pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 function _rand(min, max) { return +(min + Math.random() * (max - min)).toFixed(2); }
 function _randInt(min, max) { return Math.floor(min + Math.random() * (max - min + 1)); }
@@ -171,7 +171,7 @@ function generateSeedData() {
 
     const anos = [2023, 2024, 2025];
 
-    // ── GASTOS_GOVERNO (600 linhas) ──
+    // ── GASTOS_GOVERNO (600 rows) ──
     for (let i = 0; i < 600; i++) {
         const funcao = _pick(funcoes);
         const subs = subfuncoes[funcao] || ['Geral'];
@@ -182,7 +182,7 @@ function generateSeedData() {
         statements.push(`INSERT INTO gastos_governo (orgao,funcao,subfuncao,programa,acao,valor_empenhado,valor_liquidado,valor_pago,ano,mes) VALUES ('${_esc(_pick(orgaos))}','${_esc(funcao)}','${_esc(sub)}','${_esc('Programa de ' + funcao)}','${_esc('Ação de ' + sub)}',${emp},${liq},${pago},${_pick(anos)},${_randInt(1,12)});`);
     }
 
-    // ── SERVIDORES (800 linhas) ──
+    // ── SERVIDORES (800 rows) ──
     for (let i = 0; i < 800; i++) {
         const nome = _pick(nomes_prefixo) + ' ' + _pick(nomes_sufixo) + ' ' + _pick(nomes_sufixo);
         const rem = _rand(3000, 28000);
@@ -194,14 +194,14 @@ function generateSeedData() {
         statements.push(`INSERT INTO servidores (nome,orgao,cargo,funcao,remuneracao_basica,gratificacao,total_bruto,desconto,total_liquido,uf) VALUES ('${_esc(nome)}','${_esc(_pick(orgaos))}','${_esc(cargo)}','${_esc(cargo)}',${rem},${grat},${bruto},${desc},${liq},'${_pick(ufs)}');`);
     }
 
-    // ── TRANSFERENCIAS (700 linhas) ──
+    // ── TRANSFERENCIAS (700 rows) ──
     for (let i = 0; i < 700; i++) {
         const uf = _pick(ufs);
         const munis = municipios[uf] || ['Capital'];
         statements.push(`INSERT INTO transferencias (uf,municipio,tipo_transferencia,programa,valor,ano,mes) VALUES ('${uf}','${_esc(_pick(munis))}','${_esc(_pick(tipos_transferencia))}','${_esc(_pick(programas_transf))}',${_rand(50000, 20000000)},${_pick(anos)},${_randInt(1,12)});`);
     }
 
-    // ── EMENDAS (500 linhas) ──
+    // ── EMENDAS (500 rows) ──
     const parlamentares = [];
     for (let i = 0; i < 80; i++) {
         parlamentares.push(_pick(nomes_prefixo) + ' ' + _pick(nomes_sufixo));

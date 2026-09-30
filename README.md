@@ -1,30 +1,41 @@
-# SQL Playground — Dados Públicos BR
+# SQL Playground | Brazilian Public Data
 
-Ambiente interativo para praticar SQL com dados reais do Portal da Transparência do governo federal brasileiro. PostgreSQL roda direto no browser via PGlite — zero instalação.
+Interactive environment to practise SQL with real data from the Brazilian federal government's Transparency Portal. PostgreSQL runs straight in the browser via PGlite, with zero installation.
 
-**[Acessar o Playground](https://fexndev.github.io/sql-playground-br/)**
+**[Open the playground](https://fexndev.github.io/sql-playground-br/)**
 
-## Funcionalidades
+## Features
 
-- **Editor SQL** com execução via Ctrl+Enter e feedback de tempo de query
-- **Tabelas com dados reais** do Portal da Transparência (gastos do governo federal)
-- **10 desafios progressivos** para praticar consultas SQL do básico ao avançado
-- **Explorador de schema** — clique nas tabelas na sidebar para ver a estrutura
-- **Tema claro/escuro** alternável
-- **100% client-side** — o banco PostgreSQL roda no browser com PGlite, sem backend
+- **SQL editor** with Ctrl+Enter execution and query timing feedback
+- **Tables with real data** from the Transparency Portal (federal government spending)
+- **10 progressive challenges** to practise SQL from beginner to advanced
+- **Schema explorer**: click a table in the sidebar to see its structure
+- **Light/dark theme** toggle
+- **100% client-side**: the PostgreSQL database runs in the browser with PGlite, no backend
 
-## Como funciona
+## How it works
 
-O projeto utiliza [PGlite](https://pglite.dev/) para executar um banco PostgreSQL completo diretamente no navegador. Os dados são carregados automaticamente ao abrir a página, permitindo executar queries SQL reais sem necessidade de servidor ou instalação.
+The project uses [PGlite](https://pglite.dev/) to run a full PostgreSQL database directly in the browser. Data loads automatically when the page opens, so you can run real SQL queries without a server or any installation.
 
-## Tecnologias
+## Data model
 
-- HTML, CSS, JavaScript (sem frameworks)
-- PGlite (PostgreSQL no browser via WebAssembly)
-- GitHub Pages (hospedagem)
+Table and column names keep the original Portuguese terms used by the Transparency Portal, so queries match the official data:
 
-## Fontes de dados
+| Table | Content | Key columns |
+|---|---|---|
+| `gastos_governo` | Federal spending | `orgao` (government body), `funcao` (function), `valor_empenhado` (committed), `valor_pago` (paid), `ano` (year), `mes` (month) |
+| `servidores` | Federal civil servants | `nome` (name), `cargo` (role), `orgao`, `uf` (state), `total_bruto` (gross pay), `total_liquido` (net pay) |
+| `transferencias` | Transfers to municipalities | `uf`, `municipio` (municipality), `valor` (amount), `ano` |
+| `emendas` | Parliamentary budget amendments | `autor` (author), `partido` (party), `area`, `uf`, `valor_pago` |
 
-| Fonte | Dados |
+## Technologies
+
+- HTML, CSS, JavaScript (no frameworks)
+- PGlite (PostgreSQL in the browser via WebAssembly)
+- GitHub Pages (hosting)
+
+## Data sources
+
+| Source | Data |
 |---|---|
-| [Portal da Transparência](https://portaldatransparencia.gov.br/) | Gastos do governo federal |
+| [Portal da Transparência](https://portaldatransparencia.gov.br/) | Federal government spending |

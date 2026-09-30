@@ -1,10 +1,12 @@
 /* ══════════════════════════════════════
-   APP.JS — SQL Playground Engine + UI
-   Arquitetura: UI primeiro, DB depois
+   APP.JS | SQL Playground Engine + UI
+   Architecture: UI first, DB second
    ══════════════════════════════════════ */
 
 (function () {
     'use strict';
+
+    const LEVEL_LABELS = { iniciante: 'beginner', intermediario: 'intermediate', avancado: 'advanced' };
 
     // ── State ──
     let db = null;
@@ -114,8 +116,8 @@
         const truncated = totalRows > MAX_ROWS;
         const displayRows = truncated ? rows.slice(0, MAX_ROWS) : rows;
 
-        let html = `<div class="pg-results-info"><strong>${totalRows}</strong> linha${totalRows !== 1 ? 's' : ''} em ${elapsed}s`;
-        if (truncated) html += ` <span class="pg-truncated">— exibindo ${MAX_ROWS} de ${totalRows}</span>`;
+        let html = `<div class="pg-results-info"><strong>${totalRows}</strong> row${totalRows !== 1 ? 's' : ''} in ${elapsed}s`;
+        if (truncated) html += ` <span class="pg-truncated">(showing ${MAX_ROWS} of ${totalRows})</span>`;
         html += `</div>`;
         html += '<div class="pg-table-scroll"><table class="pg-result-table"><thead><tr>';
         colNames.forEach(c => html += `<th>${c}</th>`);
@@ -150,7 +152,7 @@
                 </div>
                 <div class="pg-table-cols">
                     ${t.cols.map(c => `<span class="pg-col">${c[0]} <span class="pg-col-type">${c[1]}</span></span>`).join('')}
-                    <button class="pg-btn-inspect" data-table="${t.name}">👁 Visualizar tabela</button>
+                    <button class="pg-btn-inspect" data-table="${t.name}">👁 View table</button>
                 </div>
             </div>
         `).join('');
@@ -170,7 +172,7 @@
                 <div class="pg-challenge-top">
                     <span class="pg-challenge-num">#${String(ch.id).padStart(2, '0')}</span>
                     ${isSolved(ch.id) ? '<span class="pg-solved-check">✓</span>' : ''}
-                    <span class="pg-level ${ch.level}">${ch.level}</span>
+                    <span class="pg-level ${ch.level}">${LEVEL_LABELS[ch.level] || ch.level}</span>
                 </div>
                 <div class="pg-challenge-title">${ch.title}</div>
             </div>
@@ -195,14 +197,14 @@
         challengeDetail.classList.add('visible');
         challengeDetail.innerHTML = `
             <div class="pg-challenge-detail-header">
-                <span class="pg-level ${ch.level}">${ch.level}</span>
-                <h3>#${String(ch.id).padStart(2, '0')} — ${ch.title}</h3>
+                <span class="pg-level ${ch.level}">${LEVEL_LABELS[ch.level] || ch.level}</span>
+                <h3>#${String(ch.id).padStart(2, '0')} | ${ch.title}</h3>
             </div>
             <p class="pg-challenge-question">${ch.question}</p>
             <div class="pg-challenge-actions">
-                <button class="pg-toggle-btn" data-toggle="hint">💡 Dica</button>
-                <button class="pg-toggle-btn" data-toggle="solution">🔑 Ver solução</button>
-                <button class="pg-toggle-btn pg-use-solution" data-toggle="use">📋 Usar no editor</button>
+                <button class="pg-toggle-btn" data-toggle="hint">💡 Hint</button>
+                <button class="pg-toggle-btn" data-toggle="solution">🔑 Show solution</button>
+                <button class="pg-toggle-btn pg-use-solution" data-toggle="use">📋 Use in editor</button>
             </div>
             <div class="pg-hint" id="hintBox">${ch.hint}</div>
             <div class="pg-solution" id="solutionBox"><pre>${ch.solution}</pre></div>
@@ -217,7 +219,7 @@
             });
         });
 
-        editorEl.placeholder = `-- ${ch.title}\n-- Escreva sua query aqui...`;
+        editorEl.placeholder = `-- ${ch.title}\n-- Write your query here...`;
     }
 
     function renderExamples() {
@@ -240,15 +242,15 @@
         if (!table) return;
 
         let html = `<div class="pg-inspect">`;
-        html += `<button class="pg-btn-back" id="btnBack">← Voltar</button>`;
+        html += `<button class="pg-btn-back" id="btnBack">← Back</button>`;
         html += `<div class="pg-inspect-header">`;
         html += `<h3>${tableName}</h3>`;
-        html += `<span class="pg-inspect-count">${table.count} registros</span>`;
+        html += `<span class="pg-inspect-count">${table.count} records</span>`;
         html += `</div>`;
 
         html += `<div class="pg-inspect-section">`;
-        html += `<div class="pg-inspect-label">Estrutura</div>`;
-        html += `<table class="pg-result-table"><thead><tr><th>Coluna</th><th>Tipo</th></tr></thead><tbody>`;
+        html += `<div class="pg-inspect-label">Structure</div>`;
+        html += `<table class="pg-result-table"><thead><tr><th>Column</th><th>Type</th></tr></thead><tbody>`;
         table.cols.forEach(c => {
             html += `<tr><td style="color:var(--accent);font-family:var(--mono)">${c[0]}</td><td style="color:var(--g2)">${c[1]}</td></tr>`;
         });
@@ -259,7 +261,7 @@
                 const { rows, colNames } = await executeSQL(`SELECT * FROM ${tableName} LIMIT 20`);
                 if (rows.length > 0) {
                     html += `<div class="pg-inspect-section">`;
-                    html += `<div class="pg-inspect-label">Preview (20 primeiras linhas)</div>`;
+                    html += `<div class="pg-inspect-label">Preview (first 20 rows)</div>`;
                     html += renderResultTable(rows, colNames, '0.000');
                     html += `</div>`;
                 }
@@ -267,15 +269,15 @@
                 html += `<div class="pg-error" style="margin-top:.8rem">${err.message}</div>`;
             }
         } else {
-            html += `<p style="color:var(--g3);font-size:.78rem;margin-top:.8rem">Banco ainda carregando — preview disponível em breve.</p>`;
+            html += `<p style="color:var(--g3);font-size:.78rem;margin-top:.8rem">Database still loading. Preview available shortly.</p>`;
         }
 
-        html += `<button class="pg-btn-query-table" data-table="${tableName}">Consultar no editor →</button>`;
+        html += `<button class="pg-btn-query-table" data-table="${tableName}">Query in editor →</button>`;
         html += `</div>`;
         resultsEl.innerHTML = html;
 
         $('btnBack').addEventListener('click', () => {
-            resultsEl.innerHTML = '<div class="pg-empty"><div class="pg-empty-icon">🔍</div><p>Explore os dados do governo federal</p><small>Escolha um exemplo ou escreva sua query</small><div class="pg-quick-examples" id="quickExamples"></div></div>';
+            resultsEl.innerHTML = '<div class="pg-empty"><div class="pg-empty-icon">🔍</div><p>Explore Brazilian federal government data</p><small>Pick an example or write your own query</small><div class="pg-quick-examples" id="quickExamples"></div></div>';
             renderExamples();
         });
 
@@ -303,7 +305,7 @@
 
     loadingEl.style.display = 'none';
     appEl.classList.add('ready');
-    setStatus('loading', 'Carregando banco...');
+    setStatus('loading', 'Loading database...');
     btnRun.disabled = true;
 
     // ══════════════════════════════════════
@@ -344,7 +346,7 @@
     async function initDB() {
         try {
             await initPGlite();
-            setStatus('active', 'PostgreSQL ativo');
+            setStatus('active', 'PostgreSQL active');
             btnRun.disabled = false;
             dbReady = true;
             return;
@@ -360,15 +362,15 @@
                 document.head.appendChild(s);
             });
             await initSqlJs();
-            setStatus('active', 'SQLite ativo (fallback)');
+            setStatus('active', 'SQLite active (fallback)');
             btnRun.disabled = false;
             dbReady = true;
             return;
         } catch (err) {
             console.error('sql.js failed:', err.message);
         }
-        setStatus('error', 'Erro ao carregar banco');
-        resultsEl.innerHTML = `<div class="pg-error">Não foi possível inicializar o banco de dados.<br>Tente um browser moderno (Chrome, Firefox, Edge, Safari).<br><br>Verifique o console (F12) para detalhes.</div>`;
+        setStatus('error', 'Error loading database');
+        resultsEl.innerHTML = `<div class="pg-error">The database could not be started.<br>Try a modern browser (Chrome, Firefox, Edge, Safari).<br><br>Check the console (F12) for details.</div>`;
     }
 
     initDB();
@@ -383,9 +385,9 @@
 
         isRunning = true;
         btnRun.disabled = true;
-        btnRun.textContent = '⏳ Executando...';
+        btnRun.textContent = '⏳ Running...';
         timeEl.textContent = '';
-        resultsEl.innerHTML = '<div class="pg-empty"><div class="pg-spinner"></div><p>Executando...</p></div>';
+        resultsEl.innerHTML = '<div class="pg-empty"><div class="pg-spinner"></div><p>Running...</p></div>';
 
         const t0 = performance.now();
 
@@ -395,9 +397,9 @@
             timeEl.textContent = `${elapsed}s`;
 
             if (isExec && rows.length === 0) {
-                resultsEl.innerHTML = '<div class="pg-results-info">Query executada com sucesso.</div>';
+                resultsEl.innerHTML = '<div class="pg-results-info">Query executed successfully.</div>';
             } else if (rows.length === 0) {
-                resultsEl.innerHTML = `<div class="pg-results-info">0 linhas retornadas em ${elapsed}s.</div>`;
+                resultsEl.innerHTML = `<div class="pg-results-info">0 rows returned in ${elapsed}s.</div>`;
             } else {
                 resultsEl.innerHTML = renderResultTable(rows, colNames, elapsed);
 
@@ -405,7 +407,7 @@
                     markSolved(activeChallenge.id);
                     updateProgress();
                     renderChallenges();
-                    showToast(`✓ Desafio #${String(activeChallenge.id).padStart(2, '0')} resolvido!`);
+                    showToast(`✓ Challenge #${String(activeChallenge.id).padStart(2, '0')} solved!`);
                 }
             }
         } catch (err) {
@@ -416,7 +418,7 @@
 
         isRunning = false;
         btnRun.disabled = false;
-        btnRun.textContent = '▶ Executar';
+        btnRun.textContent = '▶ Run';
     }
 
     // ══════════════════════════════════════
@@ -521,7 +523,7 @@
 
     btnRun.addEventListener('click', () => {
         if (dbReady) runQuery();
-        else showToast('Banco ainda carregando, aguarde...');
+        else showToast('Database still loading, please wait...');
     });
 
     btnClear.addEventListener('click', () => {
@@ -530,7 +532,7 @@
     });
 
     btnClearResults.addEventListener('click', () => {
-        resultsEl.innerHTML = '<div class="pg-empty"><div class="pg-empty-icon">🔍</div><p>Resultados limpos</p></div>';
+        resultsEl.innerHTML = '<div class="pg-empty"><div class="pg-empty-icon">🔍</div><p>Results cleared</p></div>';
         timeEl.textContent = '';
     });
 

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SQL Playground — Dados Públicos BR</title>
-    <meta name="description" content="Pratique SQL com dados reais do Portal da Transparência do governo federal brasileiro. PostgreSQL no browser, zero instalação.">
+    <title>SQL Playground | Brazilian Public Data</title>
+    <meta name="description" content="Practise SQL with real data from the Brazilian federal government's Transparency Portal. PostgreSQL in the browser, zero installation.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,9 +24,9 @@
             <span class="pg-badge">Portal da Transparência</span>
         </div>
         <div class="pg-header-right">
-            <button class="pg-theme-toggle" id="themeToggle" title="Alternar tema" aria-label="Alternar tema claro/escuro">🌙</button>
-            <span class="pg-status pg-status--loading" id="dbStatus">Carregando...</span>
-            <span class="pg-progress">Resolvidos: <strong id="progressCount">0/10</strong></span>
+            <button class="pg-theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle light/dark theme">🌙</button>
+            <span class="pg-status pg-status--loading" id="dbStatus">Loading...</span>
+            <span class="pg-progress">Solved: <strong id="progressCount">0/10</strong></span>
         </div>
     </div>
 </header>
@@ -34,7 +34,7 @@
 <!-- ── LOADING (inline, hidden by JS) ── -->
 <div class="pg-loading" id="loading">
     <div class="pg-spinner"></div>
-    <p>Inicializando...</p>
+    <p>Starting up...</p>
 </div>
 
 <!-- ── APP ── -->
@@ -43,15 +43,15 @@
     <!-- Sidebar -->
     <aside class="pg-sidebar">
         <div>
-            <div class="pg-sidebar-title">📊 Tabelas disponíveis</div>
-            <p class="pg-sidebar-hint">Clique em uma tabela para explorar</p>
+            <div class="pg-sidebar-title">📊 Available tables</div>
+            <p class="pg-sidebar-hint">Click a table to explore it</p>
             <div id="schemaList"></div>
         </div>
 
         <hr class="pg-sidebar-divider">
 
         <div>
-            <div class="pg-sidebar-title">🏆 Desafios</div>
+            <div class="pg-sidebar-title">🏆 Challenges</div>
             <div id="challengeList"></div>
         </div>
     </aside>
@@ -67,18 +67,18 @@
             <div class="pg-editor-label">
                 <span>Query SQL</span>
                 <div class="pg-editor-actions">
-                    <button class="pg-btn-clear" id="btnClear">Limpar script</button>
-                    <button class="pg-btn-clear" id="btnClearResults">Limpar resultados</button>
+                    <button class="pg-btn-clear" id="btnClear">Clear script</button>
+                    <button class="pg-btn-clear" id="btnClearResults">Clear results</button>
                 </div>
             </div>
             <textarea class="pg-editor" id="editor"
                 placeholder="SELECT * FROM gastos_governo LIMIT 10;
 
--- Explore as tabelas na barra lateral
--- ou escolha um desafio pra começar"
+-- Explore the tables in the sidebar
+-- or pick a challenge to get started"
                 spellcheck="false"></textarea>
             <div class="pg-run-row">
-                <button class="pg-btn-run" id="btnRun" disabled>▶ Executar</button>
+                <button class="pg-btn-run" id="btnRun" disabled>▶ Run</button>
                 <span class="pg-shortcut" id="shortcutHint">Ctrl+Enter</span>
                 <span class="pg-time" id="queryTime"></span>
             </div>
@@ -88,8 +88,8 @@
         <div class="pg-results" id="results">
             <div class="pg-empty">
                 <div class="pg-empty-icon">🔍</div>
-                <p>Explore os dados do governo federal</p>
-                <small>Escolha um exemplo abaixo ou escreva sua própria query</small>
+                <p>Explore Brazilian federal government data</p>
+                <small>Pick an example below or write your own query</small>
 
                 <div class="pg-quick-examples" id="quickExamples"></div>
             </div>
